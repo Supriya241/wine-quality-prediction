@@ -1,0 +1,106 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report,confusion_matrix
+
+
+
+data = pd.read_csv("C:/Users/91905/Downloads/WineQT.csv")
+
+
+print(data.head())
+df.info()
+df.describe().T
+df.isnull().sum()
+
+
+# Data preprocessing
+X = data[['density','fixed acidity','volatile acidity']]
+y = data['quality'] 
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Random Forest Classifier
+rf_clf = RandomForestClassifier()
+rf_clf.fit(X_train, y_train)
+rf_pred = rf_clf.predict(X_test)
+
+# Stochastic Gradient Descent (SGD) Classifier
+sgd_clf = SGDClassifier()
+sgd_clf.fit(X_train, y_train)
+sgd_pred = sgd_clf.predict(X_test)
+
+# Support Vector Classifier (SVC)
+svc_clf = SVC()
+svc_clf.fit(X_train, y_train)
+svc_pred = svc_clf.predict(X_test)
+
+# Evaluate model performance
+print("Random Forest Classifier Accuracy:", accuracy_score(y_test, rf_pred))
+print("SGD Classifier Accuracy:", accuracy_score(y_test, sgd_pred))
+print("SVC Accuracy:", accuracy_score(y_test, svc_pred))
+
+# Classification report for each model
+print("\nRandom Forest Classifier Report:")
+print(classification_report(y_test, rf_pred))
+
+print("\nSGD Classifier Report:")
+print(classification_report(y_test, sgd_pred))
+
+print("\nSVC Report:")
+print(classification_report(y_test, svc_pred))
+
+
+# Visualize the results
+plt.figure(figsize=(10, 6))
+
+# Plotting Random Forest predictions
+plt.subplot(2, 2, 1)
+sns.scatterplot(x=X_test['density'], y=X_test['fixed acidity'], hue=rf_pred, palette='viridis')
+plt.title('Random Forest Predictions')
+plt.xlabel('Density')
+plt.ylabel('fixed acidity')
+
+# Plotting SGD predictions
+plt.subplot(2, 2, 2)
+sns.scatterplot(x=X_test['density'], y=X_test['fixed acidity'], hue=sgd_pred, palette='viridis')
+plt.title('SGD Predictions')
+plt.xlabel('Density')
+plt.ylabel('fixed acidity')
+
+# Plotting SVC predictions
+plt.subplot(2, 2, 3)
+sns.scatterplot(x=X_test['density'], y=X_test['fixed acidity'], hue=svc_pred, palette='viridis')
+plt.title('SVC Predictions')
+plt.xlabel('Density')
+plt.ylabel('fixed acidity')
+
+plt.tight_layout()
+plt.show()
+
+# Plotting the confusion matrix for each model
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+sns.heatmap(confusion_matrix(y_test, rf_pred), annot=True, fmt='d', cmap='Blues', ax=axes[0])
+axes[0].set_title('Random Forest')
+axes[0].set_xlabel('Predicted')
+axes[0].set_ylabel('Actual')
+
+sns.heatmap(confusion_matrix(y_test, sgd_pred), annot=True, fmt='d', cmap='Blues', ax=axes[1])
+axes[1].set_title('SGD Classifier')
+axes[1].set_xlabel('Predicted')
+axes[1].set_ylabel('Actual')
+
+sns.heatmap(confusion_matrix(y_test, svc_pred), annot=True, fmt='d', cmap='Blues', ax=axes[2])
+axes[2].set_title('SVC')
+axes[2].set_xlabel('Predicted')
+axes[2].set_ylabel('Actual')
+
+plt.tight_layout()
+plt.show()
